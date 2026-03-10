@@ -1,4 +1,4 @@
-import { Menu, shell, app, BrowserWindow } from 'electron'
+import { Menu, shell, BrowserWindow } from 'electron'
 import { ensureItemIds } from './ensure-item-ids'
 import { MenuEvent } from './menu-event'
 import { truncateWithEllipsis } from '../../lib/truncate-with-ellipsis'
@@ -148,44 +148,8 @@ export function buildDefaultMenu({
   template.push(fileMenu)
 
   template.push({
-    label: __DARWIN__ ? 'Edit' : '&Edit',
-    submenu: [
-      { role: 'undo', label: __DARWIN__ ? 'Undo' : '&Undo' },
-      { role: 'redo', label: __DARWIN__ ? 'Redo' : '&Redo' },
-      separator,
-      { role: 'cut', label: __DARWIN__ ? 'Cut' : 'Cu&t' },
-      { role: 'copy', label: __DARWIN__ ? 'Copy' : '&Copy' },
-      { role: 'paste', label: __DARWIN__ ? 'Paste' : '&Paste' },
-      {
-        label: __DARWIN__ ? 'Select All' : 'Select &all',
-        accelerator: 'CmdOrCtrl+A',
-        click: emit('select-all'),
-      },
-      separator,
-      {
-        id: 'find',
-        label: __DARWIN__ ? 'Find' : '&Find',
-        accelerator: 'CmdOrCtrl+F',
-        click: emit('find-text'),
-      },
-    ],
-  })
-
-  template.push({
     label: __DARWIN__ ? 'View' : '&View',
     submenu: [
-      {
-        label: __DARWIN__ ? 'Show Changes' : '&Changes',
-        id: 'show-changes',
-        accelerator: 'CmdOrCtrl+1',
-        click: emit('show-changes'),
-      },
-      {
-        label: __DARWIN__ ? 'Show History' : '&History',
-        id: 'show-history',
-        accelerator: 'CmdOrCtrl+2',
-        click: emit('show-history'),
-      },
       {
         label: __DARWIN__ ? 'Show Repository List' : 'Repository &list',
         id: 'show-repository-list',
@@ -199,30 +163,6 @@ export function buildDefaultMenu({
         click: emit('show-branches'),
       },
       separator,
-      {
-        label: __DARWIN__ ? 'Go to Summary' : 'Go to &Summary',
-        id: 'go-to-commit-message',
-        accelerator: 'CmdOrCtrl+G',
-        click: emit('go-to-commit-message'),
-      },
-      {
-        label: getStashedChangesLabel(isStashedChangesVisible),
-        id: 'toggle-stashed-changes',
-        accelerator: 'Ctrl+H',
-        click: isStashedChangesVisible
-          ? emit('hide-stashed-changes')
-          : emit('show-stashed-changes'),
-      },
-      {
-        label: __DARWIN__
-          ? `${isChangesFilterVisible ? 'Hide' : 'Show'} Changes Filter`
-          : `${
-              isChangesFilterVisible ? 'Hide' : 'Show'
-            } Toggle Chan&ges Filter`,
-        id: 'toggle-changes-filter',
-        accelerator: 'CmdOrCtrl+L',
-        click: emit('toggle-changes-filter'),
-      },
       {
         label: __DARWIN__ ? 'Toggle Full Screen' : 'Toggle &full screen',
         role: 'togglefullscreen',
@@ -484,12 +424,6 @@ export function buildDefaultMenu({
     click: emit('open-pull-request'),
   })
 
-  template.push({
-    label: __DARWIN__ ? 'Branch' : '&Branch',
-    id: 'branch',
-    submenu: branchSubmenu,
-  })
-
   if (__DARWIN__) {
     template.push({
       role: 'window',
@@ -501,35 +435,6 @@ export function buildDefaultMenu({
         { role: 'front' },
       ],
     })
-  }
-
-  const submitIssueItem: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'Report Issue…' : 'Report issue…',
-    click() {
-      shell
-        .openExternal('https://github.com/desktop/desktop/issues/new/choose')
-        .catch(err => log.error('Failed opening issue creation page', err))
-    },
-  }
-
-  const contactSupportItem: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'Contact GitHub Support…' : '&Contact GitHub support…',
-    click() {
-      shell
-        .openExternal(
-          `https://github.com/contact?from_desktop_app=1&app_version=${app.getVersion()}`
-        )
-        .catch(err => log.error('Failed opening contact support page', err))
-    },
-  }
-
-  const showUserGuides: Electron.MenuItemConstructorOptions = {
-    label: 'Show User Guides',
-    click() {
-      shell
-        .openExternal('https://docs.github.com/en/desktop')
-        .catch(err => log.error('Failed opening user guides page', err))
-    },
   }
 
   const showKeyboardShortcuts: Electron.MenuItemConstructorOptions = {
@@ -560,9 +465,6 @@ export function buildDefaultMenu({
   }
 
   const helpItems = [
-    submitIssueItem,
-    contactSupportItem,
-    showUserGuides,
     showKeyboardShortcuts,
     showLogsItem,
   ]
@@ -607,14 +509,6 @@ function getPushLabel(
   }
 
   return __DARWIN__ ? 'Force Push' : 'Force P&ush'
-}
-
-function getStashedChangesLabel(isStashedChangesVisible: boolean): string {
-  if (isStashedChangesVisible) {
-    return __DARWIN__ ? 'Hide Stashed Changes' : 'H&ide stashed changes'
-  }
-
-  return __DARWIN__ ? 'Show Stashed Changes' : 'Sho&w stashed changes'
 }
 
 type ClickHandler = (
