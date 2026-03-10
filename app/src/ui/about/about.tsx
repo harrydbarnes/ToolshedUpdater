@@ -282,6 +282,9 @@ export class About extends React.Component<IAboutProps> {
             </span>{' '}
             ({releaseNotesLink})
           </p>
+          <p className="no-padding">
+            Forked from <LinkButton uri="https://github.com/desktop/desktop">GitHub Desktop</LinkButton>
+          </p>
           {this.renderUpdateDetails()}
           {this.renderUpdateButton()}
           {this.renderBetaLink()}
